@@ -13,18 +13,96 @@ function Header(props) {
 }
 
 function Menu(props) {
-	props.menu.option({ label: "Chat" }, () => {
+	props.menu.option({ label: "Meditate" }, () => {
 		routes.home();
 	});
 
-	props.menu.option({ label: "Why the Bible?" }, () => {
+	props.menu.option({ label: "❓ About Bontaki" }, () => {
 		routes.about();
 	});
+
+	props.menu.option({ label: "📱 Install Mobile" }, () => {
+		routes.mobile();
+	});
+
+	props.menu.option({ label: "Privacy Policy" }, () => {
+		routes.privacy();
+	});
+
 
 	props.menu.option({ label: "Reset Data" }, () => {
 		routes.reset();
 	});
 }
+
+function Mobile(props) {
+    // private
+
+    const that = this;
+
+    var state = {}
+
+    function init() {
+    }
+
+	function render() {
+		Header();
+		const menu = ui.text({ body: `
+### 🍊 Android
+
+Just tap ⋮ then "Install Bontaki...".
+
+### 🍏 Ios
+
+Just tap 📤 then "Add to Home Screen".
+		` });
+
+		Menu({ menu: menu });
+	}
+
+	this.display = function() {
+		// clean slate the existing interface...
+		ui.clear();
+		// render the new interface elements...
+        render();
+		// initialize state data...
+		init();
+	}
+  
+};
+
+function Privacy(props) {
+    // private
+
+    const that = this;
+
+    var state = {}
+
+    function init() {
+    }
+
+	function render() {
+		Header();
+		const menu = ui.text({ body: `
+### Privacy is Paramount.
+
+Bontaki pledges to keep your data private. It remains with your device and can be 
+erased at anytime through the "Reset Data" option.
+		` });
+
+		Menu({ menu: menu });
+	}
+
+	this.display = function() {
+		// clean slate the existing interface...
+		ui.clear();
+		// render the new interface elements...
+        render();
+		// initialize state data...
+		init();
+	}
+  
+};
 
 function Reset(props) {
     // private
@@ -41,7 +119,7 @@ function Reset(props) {
 		const menu = ui.text({ body: `
 ### Are you sure you wish to reset your data?
 
-Tap the lower ... to clean slate the application...
+Tap the lower ... to clean slate the application.
 		` });
 
 		Menu({ menu: menu });
@@ -172,6 +250,8 @@ Bontaki uses natural language processing to read your emotional state and reply 
 const routes = {
 	home: () => { new Home().display() },
 	about: () => { new About().display() },
+	mobile: () => { new Mobile().display() },
+	privacy: () => { new Privacy().display() },
 	reset: () => { new Reset().display() }
 }
 
