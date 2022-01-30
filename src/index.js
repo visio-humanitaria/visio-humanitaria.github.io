@@ -3,6 +3,11 @@ import * as serviceWorker from "./serviceWorker";
 import nlp from "bontaki-engine";
 import ostentus from "ostentus";
 
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent Chrome 67 and earlier from automatically showing the prompt
+    e.preventDefault();
+});
+
 const ui = ostentus({ target: "root" });
 
 function Header(props) {
@@ -10,31 +15,43 @@ function Header(props) {
 # Bontaki
 	` });
 	header.style({ backgroundColor: "rgba(0, 0, 0, 0)" });
+	setTimeout(() => {
+		document.getElementById(`element-${header.props._id}`).onclick = function() {
+			routes.home();
+		}
+	}, 10);
 }
 
 function Menu(props) {
-	props.menu.option({ label: "💧 Meditate" }, () => {
+	const element = ui.text({ body: "" });
+	element.style({ paddingBottom: "0%" });
+
+	element.option({ label: "..." }, () => {
+		
+	});
+
+	element.option({ label: "💧 Converse" }, () => {
 		routes.home();
 	});
 
-	props.menu.option({ label: "📕 Your Verses" }, () => {
+	element.option({ label: "📕 Your Verses" }, () => {
 		routes.historical();
 	});
 
-	props.menu.option({ label: "❓ About Bontaki" }, () => {
+	element.option({ label: "❓ About Bontaki" }, () => {
 		routes.about();
 	});
 
-	props.menu.option({ label: "📱 Install Mobile" }, () => {
+	element.option({ label: "📱 Install Mobile" }, () => {
 		routes.mobile();
 	});
 
-	props.menu.option({ label: "🔒 Privacy Policy" }, () => {
+	element.option({ label: "🔒 Privacy Policy" }, () => {
 		routes.privacy();
 	});
 
 
-	props.menu.option({ label: "🔥 Reset Data" }, () => {
+	element.option({ label: "🔥 Reset Data" }, () => {
 		routes.reset();
 	});
 }
@@ -50,18 +67,19 @@ function Mobile(props) {
     }
 
 	function render() {
-		Header();
-		const menu = ui.text({ body: `
+		Header(); 
+		Menu();
+		const description = ui.text({ body: `
 ### 🍊 Android
 
-Just tap ⋮ then "Install Bontaki...".
+Just tap ⋮ then "Install App...".
 
 ### 🍏 Ios
 
 Just tap 📤 then "Add to Home Screen".
 		` });
 
-		Menu({ menu: menu });
+		
 	}
 
 	this.display = function() {
@@ -86,15 +104,16 @@ function Privacy(props) {
     }
 
 	function render() {
-		Header();
-		const menu = ui.text({ body: `
+		Header(); 
+		Menu();
+		const description = ui.text({ body: `
 ### Privacy is Paramount.
 
 Bontaki pledges to keep your data private. It remains with your device and can be 
 erased at anytime through the "Reset Data" option.
 		` });
 
-		Menu({ menu: menu });
+		
 	}
 
 	this.display = function() {
@@ -119,17 +138,16 @@ function Reset(props) {
     }
 
 	function render() {
-		Header();
-		const menu = ui.text({ body: `
+		Header(); 
+		Menu();
+		const description = ui.text({ body: `
 ### Are you sure you wish to reset your data?
 
-Tap the lower ... to clean slate the application.
+Tap the ... to clean slate the application.
 		` });
 
-		Menu({ menu: menu });
-
-		const reset = ui.text({ body: "" });
-		reset.option({ label: "DELETE DATA" }, () => {
+		
+		description.option({ label: "DELETE DATA" }, () => {
 			localStorage.setItem("bontaki_chat_data", JSON.stringify([]));
 			routes.home();
 		});
@@ -157,8 +175,9 @@ function About(props) {
     }
 
 	function render() {
-		Header();
-		const menu = ui.text({ body: `
+		Header(); 
+		Menu();
+		const description = ui.text({ body: `
 ### Why study scriptures?
 
 As long as humanity could talk to one another, stories have always been told. These 
@@ -175,7 +194,7 @@ of metaphors for the purpose of moralistic psychoanalysis. In short, Bontaki is 
 tool to assist in the ancient practice of meditation.
 		` });
 
-		Menu({ menu: menu });
+		
 	}
 
 	this.display = function() {
@@ -212,9 +231,10 @@ ${d.answer}
 	}
 
 	function render() {
-		Header();
+		Header(); 
+		Menu();
 
-		const menu = ui.text({ body: `
+		const description = ui.text({ body: `
 ### Your thoughts, your scriptures.
 
 These are the verses unique to you. ❤️
@@ -224,7 +244,7 @@ These are the verses unique to you. ❤️
 
 		chatbox.style({ maxHeight: "200px", overflow: "auto", overflowX: "hidden" });
 
-		Menu({ menu: menu });
+		
 
 		chatbox.update({ body: formattedChat(JSON.parse(localStorage.getItem("bontaki_chat_data"))) });
 	}
@@ -258,10 +278,25 @@ function Home(props) {
 		return data[0].answer;
 	}
 
-	function render() {
-		Header();
+	function typeWrite(data) {
+		const chars = data.body.split("");
+		var string = "";
+		var index = 0;
+		const interval = setInterval(() => {
+			string += chars[index];
+			data.element.update({ body: string });
+			index += 1;
+			if(index === chars.length) {
+				clearInterval(interval);
+			}
+		}, 50);
+	}
 
-		const menu = ui.text({ body: `
+	function render() {
+		Header(); 
+		Menu();
+
+		const description = ui.text({ body: `
 ### Speak to biblical texts as a friend.
 
 Bontaki uses natural language processing to read your emotional state and reply within scriptural context.
@@ -275,16 +310,24 @@ Bontaki uses natural language processing to read your emotional state and reply 
 
 		chat.input({ name: "message", type: "textarea" });
 		chat.submit(async (data) => {
+			if(data.message.length === 0) {
+				return;
+			}
 			const chat_data = await nlp().findScripture({ utterance: data.message });
 			const update = JSON.parse(localStorage.getItem("bontaki_chat_data"));
 			update.unshift({ ...chat_data, utterance: data.message });
 			localStorage.setItem("bontaki_chat_data", JSON.stringify(update));
-			chatbox.update({ body: formattedChat(update) });
+			typeWrite({ element: chatbox, body: update[0].answer });
 		});
-
-		Menu({ menu: menu });
-
-		chatbox.update({ body: formattedChat(JSON.parse(localStorage.getItem("bontaki_chat_data"))) });
+		
+		const chat_data = JSON.parse(localStorage.getItem("bontaki_chat_data"));
+		if(chat_data.length === 0) {
+			typeWrite({ element: chatbox, body: `
+Hello! This is Bontaki. How are you feeling right now?
+			` });
+			return;
+		}
+		typeWrite({ element: chatbox, body: chat_data[0].answer });
 	}
 
 	this.display = function() {
