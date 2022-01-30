@@ -13,8 +13,12 @@ function Header(props) {
 }
 
 function Menu(props) {
-	props.menu.option({ label: "Meditate" }, () => {
+	props.menu.option({ label: "💧 Meditate" }, () => {
 		routes.home();
+	});
+
+	props.menu.option({ label: "📕 Your Verses" }, () => {
+		routes.historical();
 	});
 
 	props.menu.option({ label: "❓ About Bontaki" }, () => {
@@ -25,12 +29,12 @@ function Menu(props) {
 		routes.mobile();
 	});
 
-	props.menu.option({ label: "Privacy Policy" }, () => {
+	props.menu.option({ label: "🔒 Privacy Policy" }, () => {
 		routes.privacy();
 	});
 
 
-	props.menu.option({ label: "Reset Data" }, () => {
+	props.menu.option({ label: "🔥 Reset Data" }, () => {
 		routes.reset();
 	});
 }
@@ -185,7 +189,7 @@ tool to assist in the ancient practice of meditation.
   
 };
 
-function Home(props) {
+function Historical(props) {
     // private
 
     const that = this;
@@ -211,6 +215,53 @@ ${d.answer}
 		Header();
 
 		const menu = ui.text({ body: `
+### Your thoughts, your scriptures.
+
+These are the verses unique to you. ❤️
+		` });
+
+		const chatbox = ui.text({ body: `` });
+
+		chatbox.style({ maxHeight: "200px", overflow: "auto", overflowX: "hidden" });
+
+		Menu({ menu: menu });
+
+		chatbox.update({ body: formattedChat(JSON.parse(localStorage.getItem("bontaki_chat_data"))) });
+	}
+
+	this.display = function() {
+		// clean slate the existing interface...
+		ui.clear();
+		// render the new interface elements...
+        render();
+		// initialize state data...
+		init();
+	}
+  
+};
+
+function Home(props) {
+    // private
+
+    const that = this;
+
+    var state = {}
+
+    function init() {
+		// if not exists, create chatbox data array
+		if(localStorage.getItem("bontaki_chat_data") === null) {
+			localStorage.setItem("bontaki_chat_data", JSON.stringify([]));
+		}
+    }
+
+	function formattedChat(data) {
+		return data[0].answer;
+	}
+
+	function render() {
+		Header();
+
+		const menu = ui.text({ body: `
 ### Speak to biblical texts as a friend.
 
 Bontaki uses natural language processing to read your emotional state and reply within scriptural context.
@@ -218,7 +269,7 @@ Bontaki uses natural language processing to read your emotional state and reply 
 
 		const chatbox = ui.text({ body: `` });
 
-		chatbox.style({ maxHeight: "200px", overflow: "auto", overflowX: "hidden" });
+		//chatbox.style({ maxHeight: "200px", overflow: "auto", overflowX: "hidden" });
 
 		const chat = ui.form();
 
@@ -249,6 +300,7 @@ Bontaki uses natural language processing to read your emotional state and reply 
 
 const routes = {
 	home: () => { new Home().display() },
+	historical: () => { new Historical().display() },
 	about: () => { new About().display() },
 	mobile: () => { new Mobile().display() },
 	privacy: () => { new Privacy().display() },
