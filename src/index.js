@@ -8,6 +8,10 @@ window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
 });
 
+if(localStorage.getItem("bontaki_chat_data") === null) {
+	localStorage.setItem("bontaki_chat_data", JSON.stringify([]));
+}
+
 const ui = ostentus({ target: "root" });
 
 function Header(props) {
