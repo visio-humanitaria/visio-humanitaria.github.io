@@ -13,6 +13,31 @@ if(localStorage.getItem("bontaki_chat_data") === null) {
 	localStorage.setItem("bontaki_chat_data", JSON.stringify([]));
 }
 
+function Type(props) {
+	const that = this;
+	var state = { typing: false, interval: null }
+
+	this.write = function(data) {
+		if(state.typing) {
+			clearInterval(state.interval);
+		}
+		state.typing = true;
+		const chars = data.body.split("");
+		var string = "";
+		var index = 0;
+		state.interval = setInterval(() => {
+			string += chars[index];
+			data.element.update({ body: string });
+			index += 1;
+			if(index === chars.length) {
+				clearInterval(state.interval);
+				state.typing = false;
+			}
+		}, 50);
+	}
+
+}
+
 const ui = ostentus({ target: "root" });
 
 function Header(props) {
@@ -262,7 +287,7 @@ function Home(props) {
 
     const that = this;
 
-    var state = { elizabot: new ElizaBot() }
+    var state = { elizabot: new ElizaBot(), type: new Type() }
 
     function init() {
 		// if not exists, create chatbox data array
@@ -270,24 +295,6 @@ function Home(props) {
 			localStorage.setItem("bontaki_chat_data", JSON.stringify([]));
 		}
     }
-
-	function formattedChat(data) {
-		return data[0].answer;
-	}
-
-	function typeWrite(data) {
-		const chars = data.body.split("");
-		var string = "";
-		var index = 0;
-		const interval = setInterval(() => {
-			string += chars[index];
-			data.element.update({ body: string });
-			index += 1;
-			if(index === chars.length) {
-				clearInterval(interval);
-			}
-		}, 50);
-	}
 
 	function placeHolder(data) {
 		setTimeout(() => {
@@ -321,14 +328,14 @@ Bontaki uses natural language processing to read your emotional state and reply 
 			const update = JSON.parse(localStorage.getItem("bontaki_chat_data"));
 			update.unshift({ ...chat_data, utterance: data.message });
 			localStorage.setItem("bontaki_chat_data", JSON.stringify(update));
-			typeWrite({ element: chatbox, body: update[0].answer });
+			state.type.write({ element: chatbox, body: update[0].answer });
 			placeHolder({ element: chat, message: state.elizabot.transform(data.message) });
 		});
 		
 		const chat_data = JSON.parse(localStorage.getItem("bontaki_chat_data"));
-		placeHolder({ element: chat, message: "Hey! How are you feeling right now?" });
+		placeHolder({ element: chat, message: "How are you feeling right now?" });
 		if(chat_data.length === 0) {
-			typeWrite({ element: chatbox, body: `
+		state.type.write({ element: chatbox, body: `
 and to make it your ambition to lead a quiet life: 
 You should mind your own business and work with your 
 hands, just as we told you, so that your daily life 
@@ -337,7 +344,7 @@ not be dependent on anybody.
 			` });
 			return;
 		}
-		typeWrite({ element: chatbox, body: chat_data[0].answer });
+		state.type.write({ element: chatbox, body: chat_data[0].answer });
 	}
 
 	this.display = function() {
