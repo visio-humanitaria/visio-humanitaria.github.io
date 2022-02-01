@@ -2,6 +2,7 @@ import "react-app-polyfill/stable";
 import * as serviceWorker from "./serviceWorker";
 import nlp from "bontaki-engine";
 import ostentus from "ostentus";
+import ElizaBot from "elizabot";
 
 window.addEventListener('beforeinstallprompt', (e) => {
     // Prevent Chrome 67 and earlier from automatically showing the prompt
@@ -73,17 +74,17 @@ function Mobile(props) {
 	function render() {
 		Header(); 
 		Menu();
-		const description = ui.text({ body: `
+		ui.text({ body: `
 ### 🍊 Android
+		
+Just tap ⋮ then "Install app...".
+		` });
 
-Just tap ⋮ then "Install App...".
-
+		ui.text({ body: `
 ### 🍏 Ios
 
 Just tap 📤 then "Add to Home Screen".
 		` });
-
-		
 	}
 
 	this.display = function() {
@@ -184,18 +185,14 @@ function About(props) {
 		const description = ui.text({ body: `
 ### Why study scriptures?
 
-As long as humanity could talk to one another, stories have always been told. These 
-narratives have always shared common themes and patterns relating to the human condition.
-The stories that were most successful and shared for generations were closely tied to the 
-collective aims of humanity, hence we have holy narratives and ideas. While one of many, 
-the judeo/christian bible is an archive of collective human thought with humanitarian aim.
+As long as humanity could talk to one another, stories have always been told. 
+The Judeo/Christian bible is an archive of collective human thought with humanitarian aim.
 
 ### What's the purpose of Bontaki?
 
 Bontaki is an ongoing experiment to connect human emotional states to collective humanitarian 
-cognition echoed in biblical context. The bible is a meditative tool that uses the utility 
-of metaphors for the purpose of moralistic psychoanalysis. In short, Bontaki is a therapeutic 
-tool to assist in the ancient practice of meditation.
+cognition echoed in biblical context. Bontaki is a therapeutic tool to assist in the 
+ancient practice of meditation.
 		` });
 
 		
@@ -246,10 +243,6 @@ These are the verses unique to you. ❤️
 
 		const chatbox = ui.text({ body: `` });
 
-		chatbox.style({ maxHeight: "200px", overflow: "auto", overflowX: "hidden" });
-
-		
-
 		chatbox.update({ body: formattedChat(JSON.parse(localStorage.getItem("bontaki_chat_data"))) });
 	}
 
@@ -269,7 +262,7 @@ function Home(props) {
 
     const that = this;
 
-    var state = {}
+    var state = { elizabot: new ElizaBot() }
 
     function init() {
 		// if not exists, create chatbox data array
@@ -294,6 +287,13 @@ function Home(props) {
 				clearInterval(interval);
 			}
 		}, 50);
+	}
+
+	function placeHolder(data) {
+		setTimeout(() => {
+			const form = document.getElementById(`form-${data.element.props._id}`);
+			form.message.placeholder = data.message;
+		}, 10);
 	}
 
 	function render() {
@@ -322,12 +322,18 @@ Bontaki uses natural language processing to read your emotional state and reply 
 			update.unshift({ ...chat_data, utterance: data.message });
 			localStorage.setItem("bontaki_chat_data", JSON.stringify(update));
 			typeWrite({ element: chatbox, body: update[0].answer });
+			placeHolder({ element: chat, message: state.elizabot.transform(data.message) });
 		});
 		
 		const chat_data = JSON.parse(localStorage.getItem("bontaki_chat_data"));
+		placeHolder({ element: chat, message: "Hey! How are you feeling right now?" });
 		if(chat_data.length === 0) {
 			typeWrite({ element: chatbox, body: `
-Hello! This is Bontaki. How are you feeling right now?
+and to make it your ambition to lead a quiet life: 
+You should mind your own business and work with your 
+hands, just as we told you, so that your daily life 
+may win the respect of outsiders and so that you will 
+not be dependent on anybody.
 			` });
 			return;
 		}

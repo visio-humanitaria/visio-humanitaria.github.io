@@ -6,7 +6,7 @@
     "axios": "^0.19.2",
     "bontaki-engine": "^0.0.6",
     "check-types": "^11.1.2",
-    "elizabot": "0.0.3",
+    "elizabot": "^0.0.3",
     "email-validator": "^2.0.4",
     "magic-heartflakes": "^4.1.5",
     "ostentus": "^0.0.4",
