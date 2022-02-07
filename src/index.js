@@ -44,7 +44,7 @@ function Header(props) {
 	const header = ui.text({ body: `
 # Bontaki
 	` });
-	header.style({ backgroundColor: "rgba(0, 0, 0, 0)" });
+	header.style({ backgroundColor: "rgba(0, 0, 0, 0)", cursor: "pointer", userSelect: "none" });
 	setTimeout(() => {
 		document.getElementById(`element-${header.props._id}`).onclick = function() {
 			routes.home();
@@ -64,7 +64,7 @@ function Menu(props) {
 		routes.home();
 	});
 
-	element.option({ label: "📕 Your Verses" }, () => {
+	element.option({ label: "📕 Verse History" }, () => {
 		routes.historical();
 	});
 
@@ -261,9 +261,9 @@ ${d.answer}
 		Menu();
 
 		const description = ui.text({ body: `
-### Your thoughts, your scriptures.
+### Your archived scriptures.
 
-These are the verses unique to you. ❤️
+These verses have been uniquely selected from your interactions.
 		` });
 
 		const chatbox = ui.text({ body: `` });
@@ -322,6 +322,7 @@ Bontaki uses natural language processing to read your emotional state and reply 
 		chat.input({ name: "message", type: "textarea" });
 		chat.submit(async (data) => {
 			if(data.message.length === 0) {
+				placeHolder({ element: chat, message: "How are you feeling right now?" });
 				return;
 			}
 			const chat_data = await nlp().findScripture({ utterance: data.message });
