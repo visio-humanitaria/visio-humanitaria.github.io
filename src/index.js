@@ -287,7 +287,7 @@ function Home(props) {
 
     const that = this;
 
-    var state = { elizabot: new ElizaBot(), type: new Type() }
+    var state = { elizabot: new ElizaBot(), eliza_message: "How are you feeling right now?", type: new Type() }
 
     function init() {
 		// if not exists, create chatbox data array
@@ -322,7 +322,7 @@ Bontaki uses natural language processing to read your emotional state and reply 
 		chat.input({ name: "message", type: "textarea" });
 		chat.submit(async (data) => {
 			if(data.message.length === 0) {
-				placeHolder({ element: chat, message: "How are you feeling right now?" });
+				placeHolder({ element: chat, message: state.eliza_message });
 				return;
 			}
 			const chat_data = await nlp().findScripture({ utterance: data.message });
@@ -330,7 +330,8 @@ Bontaki uses natural language processing to read your emotional state and reply 
 			update.unshift({ ...chat_data, utterance: data.message });
 			localStorage.setItem("bontaki_chat_data", JSON.stringify(update));
 			state.type.write({ element: chatbox, body: update[0].answer });
-			placeHolder({ element: chat, message: state.elizabot.transform(data.message) });
+			state.eliza_message = state.elizabot.transform(data.message);
+			placeHolder({ element: chat, message: state.eliza_message });
 		});
 		
 		const chat_data = JSON.parse(localStorage.getItem("bontaki_chat_data"));
