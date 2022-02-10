@@ -9,8 +9,8 @@ window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
 });
 
-if(localStorage.getItem("bontaki_chat_data") === null) {
-	localStorage.setItem("bontaki_chat_data", JSON.stringify([]));
+if(localStorage.getItem("bontaki_app_data") === null) {
+	localStorage.setItem("bontaki_app_data", JSON.stringify({ scriptures: [] }));
 }
 
 function Type(props) {
@@ -178,7 +178,7 @@ Tap the ... to clean slate the application.
 
 		
 		description.option({ label: "DELETE DATA" }, () => {
-			localStorage.setItem("bontaki_chat_data", JSON.stringify([]));
+			localStorage.setItem("bontaki_app_data", JSON.stringify({ scriptures: [] }));
 			routes.home();
 		});
 	}
@@ -242,10 +242,6 @@ function Historical(props) {
     var state = {}
 
     function init() {
-		// if not exists, create chatbox data array
-		if(localStorage.getItem("bontaki_chat_data") === null) {
-			localStorage.setItem("bontaki_chat_data", JSON.stringify([]));
-		}
     }
 
 	function formattedChat(data) {
@@ -268,7 +264,7 @@ These verses have been uniquely selected from your interactions.
 
 		const chatbox = ui.text({ body: `` });
 
-		chatbox.update({ body: formattedChat(JSON.parse(localStorage.getItem("bontaki_chat_data"))) });
+		chatbox.update({ body: formattedChat(JSON.parse(localStorage.getItem("bontaki_app_data")).scriptures) });
 	}
 
 	this.display = function() {
@@ -290,10 +286,6 @@ function Home(props) {
     var state = { elizabot: new ElizaBot(), eliza_message: "How are you feeling right now?", type: new Type() }
 
     function init() {
-		// if not exists, create chatbox data array
-		if(localStorage.getItem("bontaki_chat_data") === null) {
-			localStorage.setItem("bontaki_chat_data", JSON.stringify([]));
-		}
     }
 
 	function placeHolder(data) {
@@ -301,6 +293,17 @@ function Home(props) {
 			const form = document.getElementById(`form-${data.element.props._id}`);
 			form.message.placeholder = data.message;
 		}, 10);
+	}
+
+	function randomRange(min, max) {
+		return Math.random() * (max - min) + min;
+	}
+
+	function randomRatio(data) {
+		if(randomRange(0, 100) < 100 * data.ratio) {
+			return true;
+		}
+		return false;
 	}
 
 	function render() {
@@ -325,18 +328,22 @@ Bontaki uses natural language processing to read your emotional state and reply 
 				placeHolder({ element: chat, message: state.eliza_message });
 				return;
 			}
-			const chat_data = await nlp().findScripture({ utterance: data.message });
-			const update = JSON.parse(localStorage.getItem("bontaki_chat_data"));
-			update.unshift({ ...chat_data, utterance: data.message });
-			localStorage.setItem("bontaki_chat_data", JSON.stringify(update));
-			state.type.write({ element: chatbox, body: update[0].answer });
+
+			if(randomRatio({ ratio: 0.30 })) {
+				const chat_data = await nlp().findScripture({ utterance: data.message });
+				const update = JSON.parse(localStorage.getItem("bontaki_app_data"));
+				update.scriptures.unshift({ ...chat_data, utterance: data.message });
+				localStorage.setItem("bontaki_app_data", JSON.stringify(update));
+				state.type.write({ element: chatbox, body: update.scriptures[0].answer });
+			}
+
 			state.eliza_message = state.elizabot.transform(data.message);
 			placeHolder({ element: chat, message: state.eliza_message });
 		});
 		
-		const chat_data = JSON.parse(localStorage.getItem("bontaki_chat_data"));
+		const chat_data = JSON.parse(localStorage.getItem("bontaki_app_data"));
 		placeHolder({ element: chat, message: "How are you feeling right now?" });
-		if(chat_data.length === 0) {
+		if(chat_data.scriptures.length === 0) {
 		state.type.write({ element: chatbox, body: `
 and to make it your ambition to lead a quiet life: 
 You should mind your own business and work with your 
@@ -346,7 +353,7 @@ not be dependent on anybody.
 			` });
 			return;
 		}
-		state.type.write({ element: chatbox, body: chat_data[0].answer });
+		state.type.write({ element: chatbox, body: chat_data.scriptures[0].answer });
 	}
 
 	this.display = function() {
