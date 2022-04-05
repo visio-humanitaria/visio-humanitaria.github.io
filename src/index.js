@@ -54,7 +54,6 @@ function Header(props) {
 
 function Menu(props) {
 	const element = ui.text({ body: "" });
-	element.style({ paddingBottom: "0%" });
 
 	element.option({ label: "..." }, () => {
 		
