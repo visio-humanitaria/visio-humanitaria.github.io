@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "axios": "^0.19.2",
-    "bontaki-engine": "^0.0.7",
+    "bontaki-engine": "^0.0.8",
     "check-types": "^11.1.2",
     "elizabot": "^0.0.3",
     "email-validator": "^2.0.4",

@@ -348,7 +348,7 @@ and to make it your ambition to lead a quiet life:
 You should mind your own business and work with your 
 hands, just as we told you, so that your daily life 
 may win the respect of outsiders and so that you will 
-not be dependent on anybody.
+not be dependent on anybody. 4:10-12
 			` });
 			return;
 		}
