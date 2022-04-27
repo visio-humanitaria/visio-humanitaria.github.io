@@ -17,12 +17,12 @@ exports.elizaInitials = [
 ];
 
 exports.elizaFinals = [
-	"Goodbye.  It was nice talking to you.",
+	"Goodbye. I wish you the best!",
 // additions (not original)
-	"Goodbye.  This was really a nice talk.",
-	"Goodbye.  I'm looking forward to our next session.",
-	"This was a good session, wasn't it -- but time is over now.   Goodbye.",
-	"Maybe we could discuss this moreover in our next session ?   Goodbye."
+	"Have a good one! I will keep you in my thoughts.",
+	"I always hope things to improve in your life, until next time!",
+	"See ya later!",
+	"I'm always here if you need to chat. Have a good one!"
 ];
 
 exports.elizaQuits = [
@@ -359,7 +359,7 @@ exports.elizaKeywords = [
 			"Do you know anyone else who feels the same way?"
 		]],
 		["* i @cannot *", [
-			"Is it that you don't want to or feel helpless or powerless?",
+			"Is it that you don't want to or feel helpless and powerless?",
 			"What could you do in this situation?",
 			"Have you considered all your options? What could you do instead?",
 			"Is it something that you'd like to do?",
@@ -386,7 +386,11 @@ exports.elizaKeywords = [
 		["*", [
 			"You say (1)?",
 			"Can you elaborate on that?",
-			"That's cool to hear. What else about that interests you?"
+			"What makes you feel that way?",
+			"What is it that you'd like to know?",
+			"How would you describe what you're feeling?",
+			"Do you feel like that's a reasonable idea?",
+			"Do you see this being a problem in the future?"
 		]]
 	]],
 	["you", 0, [
@@ -446,14 +450,14 @@ exports.elizaKeywords = [
 		]],
 		["* my* @family *", [
 			"Tell me more about your family.",
-			"Who else in your family (4)?",
+			"Do you have a good relationship with your parents?",
 			"Your (3)?",
 			"What else comes to your mind when you think of your (3)?"
 		]],
 		["* my *", [
 			"Your (2)?",
 			"Why do you say your (2)?",
-			"Is your (2) important to you?"
+			"Is that important to you?"
 		]]
 	]],
 	["can", 0, [
