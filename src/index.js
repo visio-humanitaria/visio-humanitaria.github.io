@@ -2,7 +2,7 @@ import "react-app-polyfill/stable";
 import * as serviceWorker from "./serviceWorker";
 import nlp from "bontaki-engine";
 import ostentus from "ostentus";
-import ElizaBot from "elizabot";
+import ElizaBot from "./chatbot/elizabot";
 
 window.addEventListener('beforeinstallprompt', (e) => {
     // Prevent Chrome 67 and earlier from automatically showing the prompt
@@ -215,7 +215,7 @@ The Judeo/Christian bible is an archive of collective human thought with humanit
 ### What's the purpose of Bontaki?
 
 Bontaki is an ongoing experiment to connect human emotional states to collective humanitarian 
-cognition echoed in biblical context. Bontaki is a therapeutic tool to assist in the 
+cognition echoed in biblical context. It's a therapeutic tool to assist in the 
 ancient practice of meditation.
 		` });
 
@@ -341,7 +341,7 @@ Bontaki uses natural language processing to read your emotional state and reply 
 		});
 		
 		const chat_data = JSON.parse(localStorage.getItem("bontaki_app_data"));
-		placeHolder({ element: chat, message: "How are you feeling right now?" });
+		placeHolder({ element: chat, message: state.elizabot.getInitial() });
 		if(chat_data.scriptures.length === 0) {
 		state.type.write({ element: chatbox, body: `
 and to make it your ambition to lead a quiet life: 
